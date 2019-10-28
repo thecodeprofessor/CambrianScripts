@@ -1,0 +1,43 @@
+Using Docker Image of MariaDB
+
+////// Links////// 
+Docker:
+https://github.com/docker/docker-install
+
+MariaDB:
+https://hub.docker.com/_/mariadb
+
+
+
+////// Setup Commands //////
+
+// Optional - Install mysql client on the host server. //
+apt install mysql-client-core-5.7
+apt install mariadb-client-core-10.1
+
+// Install Docker //
+sudo curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+
+// Remove Existing Maria DB //
+sudo docker stop mariadb
+sudo docker rm mariadb
+rm ~/mariadb -r
+
+
+// Install MariaDB //
+sudo docker run -d --name mariadb -v ~/mariadb:/var/lib/mysql -p 3306:3306 -e MYSQL_ALLOW_EMPTY_PASSWORD=no -e MYSQL_ROOT_PASSWORD="supersecretmysqlpasswordhere" -e MYSQL_DATABASE=moodle -e MYSQL_USER=moodle -e MYSQL_PASSWORD="supersecretpasswordhere" --restart unless-stopped mariadb:latest
+
+// View MariaDB Logs //
+sudo docker logs mariadb
+
+
+
+////// Notes //////
+To connect to the mariadb server, you can use localhost, mariadb, or the public IP depending on your context.
+mysql -h localhost -p 3306 -u root
+
+Consider adding IP security for the database.
+
+Use https://dbeaver.io/ to connect to the database.
