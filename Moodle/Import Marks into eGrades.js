@@ -9,7 +9,7 @@
 //=SUBSTITUTE(SUBSTITUTE("Cambrian_CustomScript_EnterMoodleMarks('STUDENTNUMBERHERE','MARKHERE');","STUDENTNUMBERHERE",SUBSTITUTE(SUBSTITUTE($C2," ",""),"a","A")),"MARKHERE",SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(D2,"-","")," ",""),"%",""))
 
 // Step 3
-// Navigate to the eGrades page for the assessment, press F2 and paste the following code into the console and press enter.
+// Navigate to the eGrades page for the assessment, press F12 and paste the following code into the console and press enter.
 
 function Cambrian_CustomScript_EnterMoodleMarks(studentnumber, mark) {
     try {
