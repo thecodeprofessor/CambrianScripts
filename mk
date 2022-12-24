@@ -1,83 +1,101 @@
 #!/bin/bash
+set -e
 
-printUse(){
-    echo "Indended use: mk NAME GITHUB_URL"
+printUse() {
+     echo "Usage: mk {-g|-p|-u URL} STUDENT 
+
+    -g, --grade       enter grading mode
+    -h, -?, --help    print this help list
+    -p, --pull        pull the latest changes
+    -u, --url=URL     clone the provided git repository"
 }
 
-matchUrl(){
-    reg="^(https?:\/\/)?(github\.com)"
-    if [[  "${1}" =~ ${reg} ]]; then
-        return 1
-    fi
-    return 0
-}
-
-matchFile(){
+# Changes to the target directory. Creates the directory if it doesn't exist
+changeDir() {
+    # this reg doesn't seem to work
     reg="(?:#|<|\$|\+|%|>|!|\`|&|\*|'|\|{|\?|\"|=|}|\/|:|\\| |@)"
-    if [[ "${1}" =~ ${reg} ]] ; then
-        echo "Illegal directory name"
-        return 1
+    if [[ $dir =~ $reg ]] ; then
+        echo "Illegal directory name. Exiting"
+        exit 1
     fi
-    return 0
-}
-
-readName(){
-    echo -n "Name: "
-    #while matchFile $name ;
-        read name
-}
-
-readUrl(){
-    url=''
-    while matchUrl $url ;
-    do
-        echo -n "GitHub URL: "
-        read url
-    done
-}
-
-# creates a student folder and clones the repo
-theWork(){
-    if [[ ! -d $1 ]] ; then
-        mkdir $1
+    if [ ! -d "$dir" ] ; then
+        mkdir "$dir"
     fi
-    cd $1
-    git clone $2
-    cd ..
+    cd "$dir"
 }
 
-#if there are 2 args
-#    name=$1
-#    if the first arg matches
-#        printUse
-#        readName
-#        url=$1
-#    if the second arg matches
-#        url=$2
-#    else
-#        printUse
-#        readUrl
-#else
-#    printUse
-#    if there is 1 arg
-#        if arg 1 matches
-#            readName
-#            url=$1
-#        else
-#            name=arg1
-#            readUrl
-#    else
-#        readName
-#        readUrl
-#theWork name url
+# Builds, then runs the assignment
+grade() {
+    ktFile=`find . -name *.java`
+    kotlinc $ktFile
+    classFile=`find . -name *.class`
+    base=`basename $classFile`
+    dir=`dirname $classFile`
+    cd $dir
+    kotlin "${base%.*}"
+    cd -
+}
 
+pull() {
+    git pull
+}
 
-# if there are no command line arguments, collect them
-if [[ $# -ne 2 ]] ; then
-    printUse
-    readName
-    readUrl
-    theWork $name $url
-else
-    theWork $1 $2
-fi
+clone() {
+    reg="(https?:\/\/)?(github\.com)"
+    if [[ $1 =~ $reg ]] ; then
+        if ! git clone $1 ; then
+            echo "Clone already exists. Switching to git pull..."
+            pull
+        fi
+    else
+        echo "Not a valid GitHub URL. Exiting."
+        exit 1
+    fi
+}
+
+# Save the target directory
+for last in "$@"; do :; done
+dir=$last
+# Save the current directory for later
+cdir=`pwd`
+# Save the previous directory for later
+odir=$OLDPWD
+changeDir "$dir"
+
+# Convert long-name ags to short-name
+for arg in "$@"; do
+    shift
+    case "$arg" in
+        '--grade')  set -- "$@" '-g'     ;;
+        '--help')   set -- "$@" '-h'     ;;
+        '--pull')   set -- "$@" '-p'     ;;
+        '--url')    set -- "$@" '-u'     ;;
+        *)          set -- "$@" "$arg"  ;;
+    esac
+done
+# Parse  arguments
+while getopts "ghpu:" opt; do
+    case "$opt" in
+        'g')
+            grade
+            ;;
+        'h' | '?')
+            printUse
+            exit 0
+            ;;
+        'p')
+            pull
+            ;;
+        'u')
+            clone "$OPTARG"
+            ;;
+        '--' | '*')
+            printUse
+            exit 2
+            ;;
+     esac
+done
+
+# Restore OLDWD and pwd
+cd "$odir"
+cd "$pwd"
