@@ -1,15 +1,15 @@
 // Step 1
-//Create an Excel sheet that contains a column for student number and a column for each assessment's mark.
-//Insert a blank column to the right of each assessment's column.
+//Create an Excel sheet that contains a column for student numbers and a column for each assessment mark.
+//Insert a blank column to the right of each assessment column.
 
 // Step 2
-//Paste the following calculation into the first cell of the blank column and ensure that $C2 corrisponds to the student # column and D2 corrisponds to the student's mark column.
+//Paste the following calculation into the first cell of the blank column and ensure that $C2 corresponds to the student # column and D2 corresponds to the student's mark column.
 //Copy this calculation down for each student.
 
 //=SUBSTITUTE(SUBSTITUTE("Cambrian_CustomScript_EnterMoodleMarks('STUDENTNUMBERHERE','MARKHERE');","STUDENTNUMBERHERE",SUBSTITUTE(SUBSTITUTE($C2," ",""),"a","A")),"MARKHERE",SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(D2,"-","")," ",""),"%",""))
 
 // Step 3
-// Navigate to the eGrades page for the assessment, press F12 and paste the following code into the console and press enter.
+// Navigate to the eGrades page for the assessment, press F12, paste the following code into the console, and press enter.
 
 function Cambrian_CustomScript_EnterMoodleMarks(studentnumber, mark) {
     try {
@@ -49,7 +49,7 @@ function Cambrian_CustomScript_EnterMoodleMarks(studentnumber, mark) {
 }
 
 // Step 4
-//Copy all of the rows from the appropriate mark column (the one you insertted the calculation into) and paste it into the console and press enter.
+//Copy all the rows from the appropriate mark column (the one you inserted the calculation into), paste it into the console, and press enter.
 
 // Step 5
 //Repeat steps 3 and 4 for all assessments.
